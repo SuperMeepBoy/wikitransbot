@@ -5,9 +5,9 @@ I am not affliated nor working for Wikitrans. I am just taking a try answering a
 
 # Getting started
 
-In order to get started you first need to install tweepy :
+In order to get started you first need to install requirements :
 ```
-pip install tweepy
+pip install -r requirements.txt
 ```
 
 In a second time you must create a file named `credentials.py` at the root of this project containing your API key, key secret, access token and access token secret. Remember not to share them with anyone. The file must look somehting like :
