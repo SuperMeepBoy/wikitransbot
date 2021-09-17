@@ -22,7 +22,9 @@ def check_mentions(api, keywords, since_id):
     for tweet in tweepy.Cursor(api.mentions_timeline, since_id=since_id).items():
         new_since_id = max(tweet.id, new_since_id)
         tweet_text = tweet.text.split(' ')
-        url = f"https://wikitrans.co/wp-admin/admin-ajax.php?action=jet_ajax_search&search_taxonomy%5D=&data%5Bvalue%5D={tweet_text[1]}"
+
+        if tweet_text[1] != "article":
+            continue
         response = requests.get(url)
         if response.status_code == 200:
             api.update_status(f"@{tweet.author.screen_name} Check : {response.json()['data']['posts'][0]['link']}", tweet.id)
