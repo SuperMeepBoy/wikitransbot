@@ -25,6 +25,8 @@ def check_mentions(api, keywords, since_id):
 
         if tweet_text[1] != "article":
             continue
+
+        url = f"https://wikitrans.co/wp-admin/admin-ajax.php?action=jet_ajax_search&search_taxonomy%5D=&data%5Bvalue%5D={' '.join(tweet_text[2:])}"
         response = requests.get(url)
         if response.status_code == 200:
             api.update_status(f"@{tweet.author.screen_name} Check : {response.json()['data']['posts'][0]['link']}", tweet.id)
