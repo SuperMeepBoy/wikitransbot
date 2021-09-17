@@ -3,6 +3,7 @@ import requests
 import time
 
 import tweepy
+import tweepy.error
 
 
 def get_since_id(file_path):
@@ -25,10 +26,15 @@ def check_mentions(api, keywords, since_id, config):
         url = f"https://wikitrans.co/wp-admin/admin-ajax.php?action=jet_ajax_search&search_taxonomy%5D=&data%5Bvalue%5D={' '.join(tweet_text[2:])}"
         response = requests.get(url)
         if response.status_code == 200:
-            api.update_status(
-                config['answer_template'] % (tweet.author.screen_name, response.json()['data']['posts'][0]['link']),
-                tweet.id,
-            )
+            try:
+                api.update_status(
+                    config['answer_template'] % (tweet.author.screen_name, response.json()['data']['posts'][0]['link']),
+                    tweet.id,
+                )
+            except tweepy.error.TweepError as e:
+                # Already answered
+                if e.api_code == 187:
+                    continue
     return new_since_id
 
 
