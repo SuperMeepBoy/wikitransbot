@@ -10,14 +10,7 @@ In order to get started you first need to install requirements :
 $ pip install -r requirements.txt
 ```
 
-In a second time you must create a file named `credentials.py` at the root of this project containing your API key, key secret, access token and access token secret. Remember not to share them with anyone. The file must look somehting like :
-
-```python
-TWITTER_API_KEY=<your_twitter_api_key>
-TWITTER_API_KEY_SECRET=<your_twitter_api_secret>
-TWITTER_ACCESS_TOKEN=<your_twitter_access_token>
-TWITTER_ACCESS_TOKEN_SECRET=<your_twitter_access_token_secret>
-```
+In a second time you must fill the config file. Copy (or rename) the `config_template.json` to `config.json` and fill in the Twitter related informations with your keys and token.
 
 Once it's done you can run it from your computer or in a docker thanks to the Dockerfile
 

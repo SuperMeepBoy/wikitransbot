@@ -1,0 +1,12 @@
+{
+	"twitter": {
+		"twitter_api_key": "",
+		"twitter_api_key_secret": "",
+		"twitter_access_token": "",
+		"twitter_access_token_secret": ""
+	},
+	"last_id_file": "since_id.txt",
+	"answer_template": "@%s Salut ! Tu pourras trouver toutes les infos en cliquant sur ce lien : %s.\n\nBonne journée !",
+	"sleep_time": 60,
+	"trigger_keyword": "article"
+}
