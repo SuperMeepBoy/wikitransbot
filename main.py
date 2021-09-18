@@ -27,10 +27,14 @@ def check_mentions(api, keywords, since_id, config):
         response = requests.get(url)
         if response.status_code == 200:
             try:
-                api.update_status(
-                    config['answer_template'] % (tweet.author.screen_name, response.json()['data']['posts'][0]['link']),
-                    tweet.id,
-                )
+                data = response.json()['data']
+                if data['post_count'] == 0:
+                    api.update_status(config['no_answer_template'], tweet.id)
+                else:
+                    api.update_status(
+                        config['answer_template'] % (tweet.author.screen_name, data['posts'][0]['link']),
+                        tweet.id,
+                    )
             except tweepy.error.TweepError as e:
                 # Already answered
                 if e.api_code == 187:
