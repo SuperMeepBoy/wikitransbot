@@ -5,12 +5,7 @@ I am not affliated nor working for Wikitrans. I am just taking a try answering a
 
 # Getting started
 
-In order to get started you first need to install requirements :
-```
-$ pip install -r requirements.txt
-```
-
-In a second time you must fill the config file. Copy (or rename) the `config_template.json` to `config.json` and fill in the Twitter related informations with your keys and token.
+First, copy (or rename) the `config_template.json` to `config.json` and fill in the Twitter related informations with your key, token and secrets.
 
 Once it's done you can run it from your computer or in a docker thanks to the Dockerfile
 
