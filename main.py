@@ -29,10 +29,10 @@ def check_mentions(api, keywords, since_id, config):
             try:
                 data = response.json()['data']
                 if data['post_count'] == 0:
-                    api.update_status(config['no_answer_template'], tweet.id)
+                    api.update_status((config['no_answer_template'] % (tweet.author.screen_name)).encode('utf-8'), tweet.id)
                 else:
                     api.update_status(
-                        config['answer_template'] % (tweet.author.screen_name, data['posts'][0]['link']),
+                        (config['answer_template'] % (tweet.author.screen_name, data['posts'][0]['link'])).encode('utf-8'),
                         tweet.id,
                     )
             except tweepy.error.TweepError as e:

@@ -7,7 +7,7 @@
 	},
 	"last_id_file": "since_id.txt",
 	"answer_template": "@%s Salut ! Tu pourras trouver toutes les infos en cliquant sur ce lien : %s.\n\nBonne journée !",
-	"no_answer_template": "Désolé·e, je n'ai pas trouvé d'article correspondant à ta demande. \n\n Bonne journée !",
+	"no_answer_template": "@%s Désolé·e, je n'ai pas trouvé d'article correspondant à ta demande. \n\n Bonne journée !",
 	"sleep_time": 60,
 	"trigger_keyword": "article"
 }
