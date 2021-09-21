@@ -28,10 +28,13 @@ def check_mentions(api, keywords, since_id, config):
         if response.status_code == 200 and not tweet.favorited:
             data = response.json()['data']
             if data['post_count'] == 0:
-                api.update_status((config['no_answer_template'] % (tweet.author.screen_name)).encode('utf-8'), tweet.id)
+                api.update_status(
+                    config['no_answer_template'] % (tweet.author.screen_name),
+                    tweet.id
+                )
             else:
                 api.update_status(
-                    (config['answer_template'] % (tweet.author.screen_name, data['posts'][0]['link'])).encode('utf-8'),
+                    config['answer_template'] % (tweet.author.screen_name, data['posts'][0]['link']),
                     tweet.id,
                 )
             tweet.favorite()
@@ -39,7 +42,7 @@ def check_mentions(api, keywords, since_id, config):
 
 
 def main():
-    config = json.load(open('config.json', 'r'))
+    config = json.load(open('config.json', 'r', encoding='utf-8'))
     twitter_config = config['twitter']
     last_id_file = config['last_id_file']
 
