@@ -1,0 +1,29 @@
+version: 2.1
+
+jobs:
+  quality:
+    docker:
+      - image: python:latest
+    steps:
+      - checkout
+      - run:
+          name: "Check code quality"
+          command: |
+            pip install flake8
+            flake8
+  test:
+    docker:
+      - image: python:latest
+    steps:
+      - checkout
+      - run:
+          name: "Run pytest"
+          command: |
+            pip install -r requirements.txt
+            pytest tests/
+
+workflows:
+  check-code:
+    jobs:
+      - quality
+      - test
