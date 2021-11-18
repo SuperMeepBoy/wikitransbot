@@ -42,7 +42,7 @@ def check_mentions(api, keywords, since_id, config):
 
 
 def main():
-    config = json.load(open('config.json', 'r', encoding='utf-8'))
+    config = json.load(open('../config.json', 'r', encoding='utf-8'))
     twitter_config = config['twitter']
     last_id_file = config['last_id_file']
 
