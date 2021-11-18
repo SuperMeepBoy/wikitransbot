@@ -23,8 +23,10 @@ def check_mentions(api, keywords, since_id, config):
         if tweet_text[1] != config['trigger_keyword']:
             continue
 
-        url = f"https://wikitrans.co/wp-admin/admin-ajax.php?action=jet_ajax_search&search_taxonomy%5D=&data%5Bvalue%5D={' '.join(tweet_text[2:])}"
-        response = requests.get(url)
+        url = "https://wikitrans.co/wp-admin/admin-ajax.php?action=jet_ajax_search&search_taxonomy%5D=&data%5Bvalue%5D="
+        request_url = f"{url}{' '.join(tweet_text[2:])}"
+
+        response = requests.get(request_url)
         if response.status_code == 200 and not tweet.favorited:
             data = response.json()['data']
             if data['post_count'] == 0:
