@@ -128,5 +128,8 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# config.py (avoid Twitter key and token to be pushed)
-config.py
+# config.json (avoid Twitter key and token to be pushed)
+config.json
+
+# Other
+since_id.txt
