@@ -1,0 +1,33 @@
+---
+- name: Create {{ bot_name }} directory
+  file:
+    path: /home/ubuntu/{{ bot_name }}/{{ bot_name }}
+    state: directory
+
+- name: Copy {{ bot_name }} code
+  copy:
+    src: "{{ wikitransbot_folder }}/wikitransbot/main.py"
+    dest: /home/ubuntu/{{ bot_name }}/{{ bot_name }}
+
+- name: Copy {{ bot_name }} requirements.txt
+  copy:
+    src: "{{ wikitransbot_folder }}/requirements.txt"
+    dest: /home/ubuntu/{{ bot_name }}
+
+- name: Copy {{ bot_name }} setup.py
+  copy:
+    src: "{{ wikitransbot_folder }}/setup.py"
+    dest: /home/ubuntu/{{ bot_name }}
+
+- name: Copy {{ bot_name }} config_template.json
+  copy:
+    src: "{{ wikitransbot_folder }}/config_template.json"
+    dest: /home/ubuntu/{{ bot_name }}/config.json
+  become: true
+    
+- name: Copy {{ bot_name }} Dockerfile
+  copy:
+    src: "{{ wikitransbot_folder }}/Dockerfile"
+    dest: /home/ubuntu/{{ bot_name }}
+...
+
