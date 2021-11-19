@@ -1,0 +1,21 @@
+---
+- hosts: aws
+  remote_user: ubuntu
+  tasks:
+    - name: Setup architecture
+      include_tasks: "setup_architecture.yaml"
+      vars:
+        bot_name: wikitransbot
+
+- hosts: aws_become
+  remote_user: ubuntu
+  tasks:
+  - name: Install Docker
+    import_tasks: "install_docker.yaml"
+    become: true
+  handlers:
+  - name: Restart docker
+    service: 
+      name: docker 
+      state: restarted
+...
