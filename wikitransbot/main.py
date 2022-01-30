@@ -1,4 +1,5 @@
 import json
+import logging
 import requests
 import time
 
@@ -14,35 +15,40 @@ def get_since_id(file_path):
 
 
 def check_mentions(client, keywords, wikitransbot_id, since_id, config):
-    new_since_id = since_id
-    tweets = client.get_users_mentions(wikitransbot_id, since_id=since_id)
-    if tweets.data:
-        for tweet in tweets.data:
-            new_since_id = max(tweet.id, new_since_id)
-            tweet_text = tweet.text.split(' ')
+    try:
+        new_since_id = since_id
+        tweets = client.get_users_mentions(wikitransbot_id, since_id=since_id)
+        if tweets.data:
+            for tweet in tweets.data:
+                new_since_id = max(tweet.id, new_since_id)
+                tweet_text = tweet.text.split(' ')
 
-            if tweet_text[1] != config['trigger_keyword']:
-                continue
+                if tweet_text[1] != config['trigger_keyword']:
+                    continue
 
-            base_url = "https://wikitrans.co/wp-admin/admin-ajax.php"
-            parameters = "?action=jet_ajax_search&search_taxonomy%5D=&data%5Bvalue%5D="
-            url = base_url + parameters
-            request_url = f"{url}{' '.join(tweet_text[2:])}"
+                base_url = "https://wikitrans.co/wp-admin/admin-ajax.php"
+                parameters = "?action=jet_ajax_search&search_taxonomy%5D=&data%5Bvalue%5D="
+                url = base_url + parameters
+                request_url = f"{url}{' '.join(tweet_text[2:])}"
 
-            response = requests.get(request_url)
-            if response.status_code == 200:
-                data = response.json()['data']
-                if data['post_count'] == 0:
-                    client.create_tweet(
-                        text=config['no_answer_template'],
-                        in_reply_to_tweet_id=tweet.id,
-                    )
-                else:
-                    client.create_tweet(
-                        text=config['answer_template'] % (data['posts'][0]['link']),
-                        in_reply_to_tweet_id=tweet.id,
-                    )
-    return new_since_id
+                response = requests.get(request_url)
+                if response.status_code == 200:
+                    data = response.json()['data']
+                    if data['post_count'] == 0:
+                        client.create_tweet(
+                            text=config['no_answer_template'],
+                            in_reply_to_tweet_id=tweet.id,
+                        )
+                    else:
+                        client.create_tweet(
+                            text=config['answer_template'] % (data['posts'][0]['link']),
+                            in_reply_to_tweet_id=tweet.id,
+                        )
+        return new_since_id
+
+    except Exception as e:
+        logging.info(str(e))
+        return since_id
 
 
 def main():
