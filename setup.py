@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='wikitransbot',
-    version='1.0.0',
+    version='1.1.0',
     author='Jef Roelandt',
     author_email='roelandt.jef@protonmail.com',
     url='https://github.com/SuperMeepBoy/wikitransbot',
