@@ -70,5 +70,6 @@
       docker_container:
         name: "{{ bot_name }}"
         image: "{{ bot_name }}"
+        volumes: "wikitransbot_data:/shared/data"
         state: started
         detach: true
