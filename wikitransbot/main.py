@@ -32,7 +32,7 @@ def run(api, keyword, wikitransbot_id, since_id, config):
         new_since_id = since_id
         tweets = api.get_mentions(user_id=wikitransbot_id, since_id=since_id).data
         for tweet in tweets:
-            new_since_id = max(tweet.id, new_since_id)
+            new_since_id = max(int(tweet.id), new_since_id)
 
             request_url = build_search_article_url(tweet_text=tweet.text, keyword=keyword)
             if not request_url:
