@@ -14,22 +14,29 @@ def get_since_id(file_path):
         return 1
 
 
-def check_mentions(api, keywords, wikitransbot_id, since_id, config):
+def build_search_article_url(*, tweet_text, keyword):
+    splitted_tweet = tweet_text.split(keyword + ' ')
+
+    # Trigger word not found
+    if len(splitted_tweet) == 1:
+        return ""
+
+    base_url = "https://wikitrans.co/wp-admin/admin-ajax.php"
+    parameters = "?action=jet_ajax_search&search_taxonomy%5D=&data%5Bvalue%5D="
+    url = base_url + parameters
+    return f"{url}{splitted_tweet[1]}"
+
+
+def run(api, keyword, wikitransbot_id, since_id, config):
     try:
         new_since_id = since_id
         tweets = api.get_mentions(user_id=wikitransbot_id, since_id=since_id).data
         for tweet in tweets:
             new_since_id = max(tweet.id, new_since_id)
-            splitted_tweet = tweet.text.split(config['trigger_keyword'] + ' ')
 
-            # Trigger word not found
-            if len(splitted_tweet) == 1:
+            request_url = build_search_article_url(tweet_text=tweet.text, keyword=keyword)
+            if not request_url:
                 continue
-
-            base_url = "https://wikitrans.co/wp-admin/admin-ajax.php"
-            parameters = "?action=jet_ajax_search&search_taxonomy%5D=&data%5Bvalue%5D="
-            url = base_url + parameters
-            request_url = f"{url}{' '.join(splitted_tweet[1])}"
 
             response = requests.get(request_url)
             if response.status_code == 200:
@@ -69,7 +76,7 @@ def main():
     since_id = get_since_id(last_id_file)
 
     while True:
-        since_id = check_mentions(api, ["article"], wikitransbot_id, since_id, config)
+        since_id = run(api, config['trigger_keyword'], wikitransbot_id, since_id, config)
         with open(last_id_file, 'w') as f:
             f.write(str(since_id))  # So if the bot crashes we know where to start
         print("Sleeping")
