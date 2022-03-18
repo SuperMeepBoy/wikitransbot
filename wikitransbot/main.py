@@ -69,7 +69,7 @@ def main():
         consumer_key=twitter_config['twitter_api_key'],
         consumer_secret=twitter_config['twitter_api_key_secret'],
         access_token=twitter_config['twitter_access_token'],
-        access_token_secret=twitter_config['twitter_access_token_secret'],
+        access_secret=twitter_config['twitter_access_token_secret'],
     )
 
     wikitransbot_id = 1457666990554894337
