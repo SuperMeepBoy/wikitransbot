@@ -76,7 +76,7 @@ class Bot:
                     request_url = self.build_search_article_url(tweet_text=tweet.text)
                     if not request_url:
                         continue
-                    logging.info(f'New tweet found from {tweet.author} (#{tweet.id}) saying "{tweet.text}"')
+                    logging.info(f'New tweet found with id #{tweet.id} saying "{tweet.text}"')
 
                     response = requests.get(request_url)
                     if response.status_code == 200:
