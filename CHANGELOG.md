@@ -12,3 +12,4 @@
 **Fixed**
 
 - Bot can now reply to reply of other tweets or replies
+- Fixed a bug where Tweets were to be replied to multiple times

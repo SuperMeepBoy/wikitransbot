@@ -17,6 +17,7 @@ class Bot:
         self.wikitransbot_id = 1457666990554894337
         self.api = self.get_twitter_api()
         self.since_id_file_path = self.config['last_id_file']
+        self.old_since_id = None
         self.since_id = self.get_since_id()
         self.keyword = self.config['trigger_keyword']
         self.sleep_time = self.config['sleep_time']
@@ -61,12 +62,16 @@ class Bot:
         time.sleep(self.sleep_time)
         logging.info("Sleeping")
 
+    def update_since_id(self, new_since_id):
+        self.old_since_id = self.since_id
+        self.since_id = max(new_since_id, self.since_id)
+
     def run(self):
         while True:
             try:
                 tweets = self.api.get_mentions(user_id=self.wikitransbot_id, since_id=self.since_id).data
                 for tweet in tweets:
-                    new_since_id = max(int(tweet.id), self.since_id)
+                    self.update_since_id(int(tweet.id))
 
                     request_url = self.build_search_article_url(tweet_text=tweet.text)
                     if not request_url:
@@ -80,13 +85,13 @@ class Bot:
                             self.tweet(text=self.config['no_answer_template'], to=tweet.id)
                         else:
                             self.tweet(text=self.config['answer_template'] % (data['posts'][0]['link']), to=tweet.id)
-                self.since_id = new_since_id
-                with open(self.since_id_file_path, 'w') as f:
-                    f.write(str(new_since_id))  # So if the bot crashes we know where to start
 
             except Exception as e:
+                self.since_id = self.old_since_id
                 logging.warning(str(e))
 
+            with open(self.since_id_file_path, 'w') as f:
+                f.write(str(self.since_id))  # So if the bot crashes we know where to start
             self.sleep()
 
 
