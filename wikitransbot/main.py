@@ -11,7 +11,7 @@ class Bot:
     def __init__(self):
         self.config = json.load(open('/etc/wikitransbot/config.json', 'r', encoding='utf-8'))
 
-        logging.basicConfig(filename=self.config['logfile_path'], filemode='w+')
+        logging.basicConfig(filename=self.config['logfile_path'], filemode='a', level=logging.DEBUG)
 
         self.wikitransbot_id = self.config['twitter']['user_id']
         self.api = self.get_twitter_api()
@@ -59,8 +59,8 @@ class Bot:
         logging.info('Answer sent to #{tweet.id} with message {text}')
 
     def sleep(self):
-        time.sleep(self.sleep_time)
         logging.info("Sleeping")
+        time.sleep(self.sleep_time)
 
     def update_since_id(self, new_since_id):
         self.old_since_id = self.since_id
@@ -76,7 +76,7 @@ class Bot:
                     request_url = self.build_search_article_url(tweet_text=tweet.text)
                     if not request_url:
                         continue
-                    logging.info('New tweet found from {tweet.author} (#{tweet.id}) saying "{tweet.text}"')
+                    logging.info(f'New tweet found from {tweet.author} (#{tweet.id}) saying "{tweet.text}"')
 
                     response = requests.get(request_url)
                     if response.status_code == 200:
