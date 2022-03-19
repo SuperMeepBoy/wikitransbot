@@ -35,8 +35,9 @@ class Bot:
         try:
             with open(self.since_id_file_path, 'r') as f:
                 return int(f.read())
-        except FileNotFoundError:  # 1st time bot in ran
-            return 1
+        except FileNotFoundError as e:
+            logging.error(str(e))
+            raise e
 
     def build_search_article_url(self, *, tweet_text):
         splitted_tweet = tweet_text.split(self.keyword + ' ')
