@@ -49,6 +49,20 @@
         replace: "{{ user_id }}"
       become: true
 
+    - name: Set since_id file path
+      replace:
+        path: "{{ config_path }}"
+        regexp: "last_id_file_placeholder"
+        replace: "{{ last_id_file }}"
+      become: true
+
+    - name: Set logfile path
+      replace:
+        path: "{{ config_path }}"
+        regexp: "logfile_path_placeholder"
+        replace: "{{ logfile_path }}"
+      become: true
+
     - name: Install pip
       apt:
         name: pip

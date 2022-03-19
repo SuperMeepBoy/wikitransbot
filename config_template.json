@@ -7,10 +7,10 @@
 		"twitter_bearer_token": "twitter_bearer_token_placeholder",
 		"user_id": "user_id_placeholder"
 	},
-	"last_id_file": "since_id.txt",
+	"last_id_file": "last_id_file_placeholder",
 	"answer_template": "Salut ! Tu pourras trouver toutes les infos en cliquant sur ce lien : %s.\n\nBonne journée !",
 	"no_answer_template": "Désolé·e, je n'ai pas trouvé d'article correspondant à ta demande. \n\n Bonne journée !",
 	"sleep_time": 60,
 	"trigger_keyword": "article",
-	"logfile_path": "path/to/logfile.log"
+	"logfile_path": "logfile_path_placeholder"
 }
