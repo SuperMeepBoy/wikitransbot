@@ -13,8 +13,7 @@ class Bot:
 
         logging.basicConfig(filename=self.config['logfile_path'], filemode='w+')
 
-        # TODO: move  in conf ?
-        self.wikitransbot_id = 1457666990554894337
+        self.wikitransbot_id = self.config['twitter']['user_id']
         self.api = self.get_twitter_api()
         self.since_id_file_path = self.config['last_id_file']
         self.old_since_id = None
