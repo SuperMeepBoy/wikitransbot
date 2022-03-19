@@ -10,7 +10,6 @@ COPY wikitransbot /shared/wikitransbot/wikitransbot
 COPY requirements.txt /shared/
 COPY setup.py /shared/
 COPY config.json /etc/wikitransbot/config.json
-COPY data_ /shared/data
 
 WORKDIR /shared
 RUN pip3 install -r requirements.txt
