@@ -11,7 +11,12 @@ class Bot:
     def __init__(self):
         self.config = json.load(open('/etc/wikitransbot/config.json', 'r', encoding='utf-8'))
 
-        logging.basicConfig(filename=self.config['logfile_path'], filemode='a', level=logging.DEBUG)
+        logging.basicConfig(
+            filename=self.config['logfile_path'],
+            filemode='a',
+            level=logging.DEBUG,
+            format='[%(levelname)s] %(asctime)s:%(message)s',
+        )
 
         self.wikitransbot_id = self.config['twitter']['user_id']
         self.api = self.get_twitter_api()
