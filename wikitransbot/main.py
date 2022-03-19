@@ -61,7 +61,7 @@ class Bot:
             reply_in_reply_to_tweet_id=to,
             reply_exclude_reply_user_ids=[],
         )
-        logging.info('Answer sent to #{tweet.id} with message {text}')
+        logging.info(f'Answer sent to #{to} with message {text}')
 
     def sleep(self):
         logging.info("Sleeping")
