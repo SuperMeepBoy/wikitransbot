@@ -1,5 +1,6 @@
 import json
 import logging
+from logging.handlers import RotatingFileHandler
 import requests
 import time
 
@@ -11,12 +12,16 @@ class Bot:
     def __init__(self):
         self.config = json.load(open('/etc/wikitransbot/config.json', 'r', encoding='utf-8'))
 
+        logfile = self.config['logfile_path']
         logging.basicConfig(
-            filename=self.config['logfile_path'],
+            filename=logfile,
             filemode='a',
             level=logging.DEBUG,
             format='[%(levelname)s] %(asctime)s:%(message)s',
         )
+        self.logger = logging.getLogger()
+        handler = RotatingFileHandler(logfile, maxBytes=1024, backupCount=1)
+        self.logger.addHandler(handler)
 
         self.wikitransbot_id = self.config['twitter']['user_id']
         self.api = self.get_twitter_api()
@@ -40,7 +45,7 @@ class Bot:
             with open(self.since_id_file_path, 'r') as f:
                 return int(f.read())
         except FileNotFoundError as e:
-            logging.error(str(e))
+            self.logger.error(str(e))
             raise e
 
     def build_search_article_url(self, *, tweet_text):
@@ -61,10 +66,10 @@ class Bot:
             reply_in_reply_to_tweet_id=to,
             reply_exclude_reply_user_ids=[],
         )
-        logging.info(f'Answer sent to #{to} with message {text}')
+        self.logger.info(f'Answer sent to #{to} with message {text}')
 
     def sleep(self):
-        logging.info("Sleeping")
+        self.logger.info("Sleeping")
         time.sleep(self.sleep_time)
 
     def update_since_id(self, new_since_id):
@@ -81,7 +86,7 @@ class Bot:
                     request_url = self.build_search_article_url(tweet_text=tweet.text)
                     if not request_url:
                         continue
-                    logging.info(f'New tweet found with id #{tweet.id} saying "{tweet.text}"')
+                    self.logger.info(f'New tweet found with id #{tweet.id} saying "{tweet.text}"')
 
                     response = requests.get(request_url)
                     if response.status_code == 200:
@@ -93,7 +98,7 @@ class Bot:
 
             except Exception as e:
                 self.since_id = self.old_since_id
-                logging.warning(str(e))
+                self.logger.warning(str(e))
 
             with open(self.since_id_file_path, 'w') as f:
                 f.write(str(self.since_id))  # So if the bot crashes we know where to start

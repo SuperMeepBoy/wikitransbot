@@ -1,4 +1,7 @@
-from unittest.mock import patch
+from unittest.mock import (
+    MagicMock,
+    patch,
+)
 import tempfile
 
 import pytest
@@ -21,6 +24,7 @@ class TestBot:
         with patch.object(Bot, '__init__', lambda x: None):
             with pytest.raises(FileNotFoundError):
                 bot = Bot()
+                bot.logger = MagicMock()
                 bot.since_id_file_path = ""
                 bot.get_since_id()
 
