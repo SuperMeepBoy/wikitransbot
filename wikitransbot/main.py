@@ -50,7 +50,7 @@ class Bot:
             raise e
 
     def build_search_article_url(self, *, tweet_text):
-        splitted_tweet = tweet_text.split(self.keyword + " ")
+        splitted_tweet = tweet_text.split("@wikitransbot " + self.keyword + " ")
 
         # Trigger word not found
         if len(splitted_tweet) == 1:
