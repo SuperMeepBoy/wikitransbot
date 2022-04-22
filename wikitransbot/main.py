@@ -8,48 +8,49 @@ from pytwitter import Api
 
 
 class Bot:
-
     def __init__(self):
-        self.config = json.load(open('/etc/wikitransbot/config.json', 'r', encoding='utf-8'))
+        self.config = json.load(
+            open("/etc/wikitransbot/config.json", "r", encoding="utf-8")
+        )
 
-        logfile = self.config['logfile_path']
+        logfile = self.config["logfile_path"]
         logging.basicConfig(
             filename=logfile,
-            filemode='a',
+            filemode="a",
             level=logging.DEBUG,
-            format='[%(levelname)s] %(asctime)s:%(message)s',
+            format="[%(levelname)s] %(asctime)s:%(message)s",
         )
         self.logger = logging.getLogger()
         handler = RotatingFileHandler(logfile, maxBytes=1024, backupCount=1)
         self.logger.addHandler(handler)
 
-        self.wikitransbot_id = self.config['twitter']['user_id']
+        self.wikitransbot_id = self.config["twitter"]["user_id"]
         self.api = self.get_twitter_api()
-        self.since_id_file_path = self.config['last_id_file']
+        self.since_id_file_path = self.config["last_id_file"]
         self.old_since_id = None
         self.since_id = self.get_since_id()
-        self.keyword = self.config['trigger_keyword']
-        self.sleep_time = self.config['sleep_time']
+        self.keyword = self.config["trigger_keyword"]
+        self.sleep_time = self.config["sleep_time"]
 
     def get_twitter_api(self):
-        twitter_config = self.config['twitter']
+        twitter_config = self.config["twitter"]
         return Api(
-            consumer_key=twitter_config['twitter_api_key'],
-            consumer_secret=twitter_config['twitter_api_key_secret'],
-            access_token=twitter_config['twitter_access_token'],
-            access_secret=twitter_config['twitter_access_token_secret'],
+            consumer_key=twitter_config["twitter_api_key"],
+            consumer_secret=twitter_config["twitter_api_key_secret"],
+            access_token=twitter_config["twitter_access_token"],
+            access_secret=twitter_config["twitter_access_token_secret"],
         )
 
     def get_since_id(self):
         try:
-            with open(self.since_id_file_path, 'r') as f:
+            with open(self.since_id_file_path, "r") as f:
                 return int(f.read())
         except FileNotFoundError as e:
             self.logger.error(str(e))
             raise e
 
     def build_search_article_url(self, *, tweet_text):
-        splitted_tweet = tweet_text.split(self.keyword + ' ')
+        splitted_tweet = tweet_text.split(self.keyword + " ")
 
         # Trigger word not found
         if len(splitted_tweet) == 1:
@@ -66,7 +67,7 @@ class Bot:
             reply_in_reply_to_tweet_id=to,
             reply_exclude_reply_user_ids=[],
         )
-        self.logger.info(f'Answer sent to #{to} with message {text}')
+        self.logger.info(f"Answer sent to #{to} with message {text}")
 
     def sleep(self):
         self.logger.info("Sleeping")
@@ -79,29 +80,41 @@ class Bot:
     def run(self):
         while True:
             try:
-                tweets = self.api.get_mentions(user_id=self.wikitransbot_id, since_id=self.since_id).data
+                tweets = self.api.get_mentions(
+                    user_id=self.wikitransbot_id, since_id=self.since_id
+                ).data
                 for tweet in tweets:
                     self.update_since_id(int(tweet.id))
 
                     request_url = self.build_search_article_url(tweet_text=tweet.text)
                     if not request_url:
                         continue
-                    self.logger.info(f'New tweet found with id #{tweet.id} saying "{tweet.text}"')
+                    self.logger.info(
+                        f'New tweet found with id #{tweet.id} saying "{tweet.text}"'
+                    )
 
                     response = requests.get(request_url)
                     if response.status_code == 200:
-                        data = response.json()['data']
-                        if data['post_count'] == 0:
-                            self.tweet(text=self.config['no_answer_template'], to=tweet.id)
+                        data = response.json()["data"]
+                        if not data["post_count"]:
+                            self.tweet(
+                                text=self.config["no_answer_template"], to=tweet.id
+                            )
                         else:
-                            self.tweet(text=self.config['answer_template'] % (data['posts'][0]['link']), to=tweet.id)
+                            self.tweet(
+                                text=self.config["answer_template"]
+                                % (data["posts"][0]["link"]),
+                                to=tweet.id,
+                            )
 
             except Exception as e:
                 self.since_id = self.old_since_id
                 self.logger.warning(str(e))
 
-            with open(self.since_id_file_path, 'w') as f:
-                f.write(str(self.since_id))  # So if the bot crashes we know where to start
+            with open(self.since_id_file_path, "w") as f:
+                f.write(
+                    str(self.since_id)
+                )  # So if the bot crashes we know where to start
             self.sleep()
 
 
