@@ -3,17 +3,55 @@ import logging
 from logging.handlers import RotatingFileHandler
 from random import choice
 import requests
+from threading import Thread
 import time
 
 from pytwitter import Api
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
+
+
+class ConfigWatcher:
+    watched_file = "/etc/wikitransbot/config.json"
+
+    def __init__(self, bot):
+        self.observer = Observer()
+        self.bot = bot
+
+    def run(self):
+        event_handler = ConfigHandler(self.bot)
+        self.observer.schedule(event_handler, self.watched_file)
+        self.observer.start()
+        try:
+            while True:
+                time.sleep(5)
+        except Exception:
+            self.observer.stop()
+            print("Observer Stopped")
+
+        self.observer.join()
+
+
+class ConfigHandler(FileSystemEventHandler):
+
+    def __init__(self, bot):
+        self.bot = bot
+
+    def on_modified(self, event):
+        if event.event_type == "modified":
+            self.bot.load_config()
 
 
 class Bot:
     def __init__(self):
+        self.load_config()
+
+    def load_config(self):
         self.config = json.load(
             open("/etc/wikitransbot/config.json", "r", encoding="utf-8")
         )
 
+        # Logger
         logfile = self.config["logfile_path"]
         logging.basicConfig(
             filename=logfile,
@@ -25,14 +63,15 @@ class Bot:
         handler = RotatingFileHandler(logfile, maxBytes=1024, backupCount=1)
         self.logger.addHandler(handler)
 
-        self.wikitransbot_id = self.config["twitter"]["user_id"]
+        # Bot related variables
         self.api = self.get_twitter_api()
+        self.wikitransbot_id = self.config["twitter"]["user_id"]
+        self.old_since_id = 1
         self.since_id_file_path = self.config["last_id_file"]
-        self.old_since_id = None
         self.since_id = self.get_since_id()
         self.keyword = self.config["trigger_keyword"]
-        self.sleep_time = self.config["sleep_time"]
         self.stop_words = self.config["stop_words"]
+        self.sleep_time = self.config["sleep_time"]
 
     def get_twitter_api(self):
         twitter_config = self.config["twitter"]
@@ -123,9 +162,18 @@ class Bot:
                 f.write(
                     str(self.since_id)
                 )  # So if the bot crashes we know where to start
+
             self.sleep()
 
 
 if __name__ == "__main__":
     bot = Bot()
-    bot.run()
+    bot_thread = Thread(target=bot.run)
+
+    config_watcher = ConfigWatcher(bot)
+    config_watcher_thread = Thread(target=config_watcher.run)
+
+    bot_thread.start()
+    config_watcher_thread.start()
+    bot_thread.join()
+    config_watcher_thread.join()

@@ -5,6 +5,7 @@
 
 - Answer templates are now lists so the bot can pick a template in them to have various answers
 - Add a list of stopwords to be removed from users' requests
+- Add a filewatch on config to load changes dynamically
 
 **Fixed**
 
