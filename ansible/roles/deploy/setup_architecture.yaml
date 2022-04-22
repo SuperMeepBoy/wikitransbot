@@ -14,9 +14,9 @@
     src: "{{ wikitransbot_folder }}/requirements.txt"
     dest: /home/ubuntu/{{ bot_name }}
 
-- name: Copy {{ bot_name }} setup.py
+- name: Copy {{ bot_name }} pyproject.toml
   copy:
-    src: "{{ wikitransbot_folder }}/setup.py"
+    src: "{{ wikitransbot_folder }}/pyproject.toml"
     dest: /home/ubuntu/{{ bot_name }}
 
 - name: Copy {{ bot_name }} config_template.json
