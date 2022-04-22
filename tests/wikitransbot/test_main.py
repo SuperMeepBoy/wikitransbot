@@ -51,6 +51,11 @@ class TestBot:
                 "article",
                 "",
             ),
+            (
+                "@wikitransbot je t'invoque article féminiser sa voix",
+                "article",
+                "",
+            ),
         ],
     )
     def test_build_search_article_url(self, tweet_text, keyword, expected_result):
