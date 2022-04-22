@@ -1,3 +1,9 @@
+**[1.1.1] - 2022-04-22**
+
+**Fixed**
+
+- Bot no longer answers whenever someone says the trigger keyword in an answer. Bot now only answers if tagged with their @ and the keyword next to it
+
 **[1.1.0] - 2022-03-19**
 
 
