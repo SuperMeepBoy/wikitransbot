@@ -32,6 +32,7 @@ class Bot:
         self.since_id = self.get_since_id()
         self.keyword = self.config["trigger_keyword"]
         self.sleep_time = self.config["sleep_time"]
+        self.stop_words = self.config["stop_words"]
 
     def get_twitter_api(self):
         twitter_config = self.config["twitter"]
@@ -51,7 +52,11 @@ class Bot:
             raise e
 
     def build_search_article_url(self, *, tweet_text):
-        splitted_tweet = tweet_text.split("@wikitransbot " + self.keyword + " ")
+        clean_tweet_text = ' '.join([
+            word.lower() for word in tweet_text.split(' ')
+            if word.lower() not in self.stop_words
+        ])
+        splitted_tweet = clean_tweet_text.split("@wikitransbot " + self.keyword + " ")
 
         # Trigger word not found
         if len(splitted_tweet) == 1:

@@ -35,7 +35,7 @@ class TestBot:
                 "article",
                 (
                     "https://wikitrans.co/wp-admin/admin-ajax.php?"
-                    "action=jet_ajax_search&search_taxonomy%5D=&data%5Bvalue%5D=féminiser sa voix"
+                    "action=jet_ajax_search&search_taxonomy%5D=&data%5Bvalue%5D=féminiser voix"
                 ),
             ),
             (
@@ -62,5 +62,6 @@ class TestBot:
         with patch.object(Bot, "__init__", lambda x: None):
             bot = Bot()
             bot.keyword = keyword
+            bot.stop_words = ["unused_word", "sa"]
             result = bot.build_search_article_url(tweet_text=tweet_text)
             assert result == expected_result
