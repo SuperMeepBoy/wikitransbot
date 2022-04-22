@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "wikitransbot"
-version = "1.1.0"
+version = "1.1.1"
 description = "A Twitter bot to make request on the Wikitrans.co website"
 authors = ["Jef Roelandt <roelandt.jef@proton.me>"]
 
