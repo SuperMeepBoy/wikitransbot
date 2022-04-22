@@ -91,10 +91,13 @@ class Bot:
             raise e
 
     def build_search_article_url(self, *, tweet_text):
-        clean_tweet_text = ' '.join([
-            word.lower() for word in tweet_text.split(' ')
-            if word.lower() not in self.stop_words
-        ])
+        clean_tweet_text = " ".join(
+            [
+                word.lower()
+                for word in tweet_text.split(" ")
+                if word.lower() not in self.stop_words
+            ]
+        )
         splitted_tweet = clean_tweet_text.split("@wikitransbot " + self.keyword + " ")
 
         # Trigger word not found
@@ -142,15 +145,14 @@ class Bot:
                     if response.status_code == 200:
                         data = response.json()["data"]
                         if not data["post_count"]:
-                            no_answer_template = choice(self.config["no_answer_template"])
-                            self.tweet(
-                                text=no_answer_template, to=tweet.id
+                            no_answer_template = choice(
+                                self.config["no_answer_template"]
                             )
+                            self.tweet(text=no_answer_template, to=tweet.id)
                         else:
                             answer_template = choice(self.config["answer_template"])
                             self.tweet(
-                                text=answer_template
-                                % (data["posts"][0]["link"]),
+                                text=answer_template % (data["posts"][0]["link"]),
                                 to=tweet.id,
                             )
 
