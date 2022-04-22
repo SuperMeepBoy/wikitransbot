@@ -1,6 +1,7 @@
 import json
 import logging
 from logging.handlers import RotatingFileHandler
+from random import choice
 import requests
 import time
 
@@ -97,12 +98,14 @@ class Bot:
                     if response.status_code == 200:
                         data = response.json()["data"]
                         if not data["post_count"]:
+                            no_answer_template = choice(self.config["no_answer_template"])
                             self.tweet(
-                                text=self.config["no_answer_template"], to=tweet.id
+                                text=no_answer_template, to=tweet.id
                             )
                         else:
+                            answer_template = choice(self.config["answer_template"])
                             self.tweet(
-                                text=self.config["answer_template"]
+                                text=answer_template
                                 % (data["posts"][0]["link"]),
                                 to=tweet.id,
                             )

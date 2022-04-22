@@ -1,5 +1,10 @@
 **[1.1.1] - 2022-04-22**
 
+
+**Added**
+
+- Answer templates are now lists so the bot can pick a template in them to have various answers 
+
 **Fixed**
 
 - Bot no longer answers whenever someone says the trigger keyword in an answer. Bot now only answers if tagged with their @ and the keyword next to it
