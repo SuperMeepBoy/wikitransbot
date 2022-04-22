@@ -1,0 +1,31 @@
+- name: Install & configure Wikitransbot
+  hosts: aws
+  remote_user: ubuntu
+  vars:
+    bot_name: wikitransbot
+
+  tasks:
+    - name: Update codebase
+      copy:
+        src: "{{ wikitransbot_folder }}/wikitransbot/main.py"
+        dest: /home/ubuntu/{{ bot_name }}/{{ bot_name }}
+
+    - name: Update Dockerfile
+      copy:
+        src: "{{ wikitransbot_folder }}/Dockerfile"
+        dest: "{{ remote_wikitransbot_folder }}"
+
+    - name: Rebuild docker image
+      docker_image:
+        name: "{{ bot_name }}"
+        build:
+          path: "{{ remote_wikitransbot_folder }}"
+        source: build
+
+    - name: Run {{ bot_name }} docker container
+      docker_container:
+        name: "{{ bot_name }}"
+        image: "{{ bot_name }}"
+        volumes: "wikitransbot_data:/shared/data"
+        state: started
+        detach: true
