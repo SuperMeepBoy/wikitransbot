@@ -27,7 +27,6 @@ class ConfigWatcher:
                 time.sleep(5)
         except Exception:
             self.observer.stop()
-            print("Observer Stopped")
 
         self.observer.join()
 
@@ -60,7 +59,7 @@ class Bot:
             format="[%(levelname)s] %(asctime)s:%(message)s",
         )
         self.logger = logging.getLogger()
-        handler = RotatingFileHandler(logfile, maxBytes=1024, backupCount=1)
+        handler = RotatingFileHandler(logfile, maxBytes=10*1024*1024, backupCount=1)
         self.logger.addHandler(handler)
 
         # Bot related variables
@@ -117,10 +116,6 @@ class Bot:
         )
         self.logger.info(f"Answer sent to #{to} with message {text}")
 
-    def sleep(self):
-        self.logger.info("Sleeping")
-        time.sleep(self.sleep_time)
-
     def update_since_id(self, new_since_id):
         self.old_since_id = self.since_id
         self.since_id = max(new_since_id, self.since_id)
@@ -165,7 +160,7 @@ class Bot:
                     str(self.since_id)
                 )  # So if the bot crashes we know where to start
 
-            self.sleep()
+            time.sleep(self.sleep_time)
 
 
 if __name__ == "__main__":
