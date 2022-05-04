@@ -1,6 +1,7 @@
 import json
 import logging
 import urllib.parse
+import re
 from logging.handlers import RotatingFileHandler
 from random import choice
 import requests
@@ -10,6 +11,11 @@ import time
 from pytwitter import Api
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
+
+
+class InvalidTweet(ValueError):
+    def __init__(self):
+        super(InvalidTweet, self).__init__("Invlaid Tweet.")
 
 
 class ConfigWatcher:
@@ -89,24 +95,35 @@ class Bot:
             self.logger.error(str(e))
             raise e
 
-    def build_search_article_url(self, *, tweet_text):
-        clean_tweet_text = " ".join(
-            [
-                word.lower()
-                for word in tweet_text.split(" ")
-                if word.lower() not in self.stop_words
-            ]
-        )
-        splitted_tweet = clean_tweet_text.split("@wikitransbot " + self.keyword + " ")
+    def clean_tweet_text(self, tweet_text: str) -> str:
+        tweet_lines = re.split("[\n\r]", tweet_text)
+        for line in tweet_lines:
+            clean_line = " ".join(
+                [
+                    word.lower()
+                    for word in line.split(" ")
+                    if word.lower() not in self.stop_words
+                ]
+            )
+            splitted_line = clean_line.split("@wikitransbot " + self.keyword + " ")
 
-        # Trigger word not found
-        if len(splitted_tweet) == 1:
+            # Trigger word not found
+            if len(splitted_line) == 1:
+                continue
+            return splitted_line[1]
+        # No correct line found
+        raise InvalidTweet()
+
+    def build_search_article_url(self, *, tweet_text):
+        try:
+            tweet = self.clean_tweet_text(tweet_text)
+        except InvalidTweet:
             return ""
 
         base_url = "https://wikitrans.co/wp-admin/admin-ajax.php"
         parameters = "?action=jet_ajax_search&search_taxonomy%5D=&data%5Bvalue%5D="
         url = base_url + parameters
-        return f"{url}{urllib.parse.quote(splitted_tweet[1])}"
+        return f"{url}{urllib.parse.quote(tweet)}"
 
     def tweet(self, *, text, to):
         self.api.create_tweet(
