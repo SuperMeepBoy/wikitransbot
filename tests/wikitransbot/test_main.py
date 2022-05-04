@@ -35,7 +35,7 @@ class TestBot:
                 "article",
                 (
                     "https://wikitrans.co/wp-admin/admin-ajax.php?"
-                    "action=jet_ajax_search&search_taxonomy%5D=&data%5Bvalue%5D=féminiser voix"
+                    "action=jet_ajax_search&search_taxonomy%5D=&data%5Bvalue%5D=f%C3%A9miniser%20voix"
                 ),
             ),
             (
@@ -43,7 +43,15 @@ class TestBot:
                 "article",
                 (
                     "https://wikitrans.co/wp-admin/admin-ajax.php?"
-                    "action=jet_ajax_search&search_taxonomy%5D=&data%5Bvalue%5D=psy transfriendly"
+                    "action=jet_ajax_search&search_taxonomy%5D=&data%5Bvalue%5D=psy%20transfriendly"
+                ),
+            ),
+            (
+                "@wikitransbot article test & féminiser",
+                "article",
+                (
+                        "https://wikitrans.co/wp-admin/admin-ajax.php?"
+                        "action=jet_ajax_search&search_taxonomy%5D=&data%5Bvalue%5D=test%20%26%20f%C3%A9miniser"
                 ),
             ),
             (

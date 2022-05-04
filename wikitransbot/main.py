@@ -1,5 +1,6 @@
 import json
 import logging
+import urllib.parse
 from logging.handlers import RotatingFileHandler
 from random import choice
 import requests
@@ -106,7 +107,7 @@ class Bot:
         base_url = "https://wikitrans.co/wp-admin/admin-ajax.php"
         parameters = "?action=jet_ajax_search&search_taxonomy%5D=&data%5Bvalue%5D="
         url = base_url + parameters
-        return f"{url}{splitted_tweet[1]}"
+        return f"{url}{urllib.parse.quote(splitted_tweet[1])}"
 
     def tweet(self, *, text, to):
         self.api.create_tweet(
