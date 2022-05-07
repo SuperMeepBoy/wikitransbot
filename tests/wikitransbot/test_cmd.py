@@ -12,6 +12,7 @@ from wikitransbot.cmd import (
     InvalidCmd,
     SearchFailed,
     SearchNotFound,
+    Trombinoscope,
 )
 
 
@@ -254,3 +255,43 @@ class TestIntro:
 
     def test_help(self):
         assert Intro().help() == "@wikitransbot intro"
+
+
+class TestTrombinoscope:
+
+    @pytest.mark.parametrize(
+        "search",
+        [
+            "",
+            None,
+            "some other keyword",
+        ]
+    )
+    def test_do(self, search):
+        assert Trombinoscope().do(search) == "https://wikitrans.co/modeles/"
+
+    @pytest.mark.parametrize(
+        "cmd_name, expected_result",
+        [
+            (
+                "trombinoscope", True,
+            ),
+            (
+                "trombi", True,
+            ),
+            (
+                "bad", False,
+            ),
+            (
+                "", False,
+            ),
+            (
+                None, False,
+            ),
+        ],
+    )
+    def test_match(self, cmd_name, expected_result):
+        assert Trombinoscope().match(cmd_name) == expected_result
+
+    def test_help(self):
+        assert Trombinoscope().help() == "@wikitransbot trombinoscope"

@@ -98,3 +98,19 @@ class Intro(CmdBase):
 
     def help(self):
         return f"{self.prefix} {self.default_name}"
+
+
+class Trombinoscope(CmdBase):
+    default_name = "trombinoscope"
+
+    def match(self, cmd_name):
+        return cmd_name in [
+            self.default_name,
+            "trombi",
+        ]
+
+    def do(self, _):
+        return "https://wikitrans.co/modeles/"
+
+    def help(self):
+        return f"{self.prefix} {self.default_name}"
