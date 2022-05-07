@@ -1,3 +1,14 @@
+**[1.1.2] - ????-??-??**
+
+
+**Changed**
+
+- No longer use the rest of the tweet if user uses a line break in their request
+
+**Fixed**
+
+- Fixed a bug with tweet parsing
+
 **[1.1.1] - 2022-04-22**
 
 
