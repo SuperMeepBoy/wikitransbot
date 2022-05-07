@@ -33,7 +33,6 @@ class ConfigWatcher:
 
 
 class ConfigHandler(FileSystemEventHandler):
-
     def __init__(self, bot):
         self.bot = bot
 
@@ -60,7 +59,7 @@ class Bot:
             format="[%(levelname)s] %(asctime)s:%(message)s",
         )
         self.logger = logging.getLogger()
-        handler = RotatingFileHandler(logfile, maxBytes=10*1024*1024, backupCount=1)
+        handler = RotatingFileHandler(logfile, maxBytes=10 * 1024 * 1024, backupCount=1)
         self.logger.addHandler(handler)
 
         # Bot related variables
