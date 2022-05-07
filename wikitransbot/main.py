@@ -1,16 +1,21 @@
 import json
 import logging
-import urllib.parse
-import re
 from logging.handlers import RotatingFileHandler
 from random import choice
-import requests
 from threading import Thread
 import time
 
 from pytwitter import Api
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
+
+from .cmd import (
+    Cmd,
+    CmdNotFound,
+    InvalidCmd,
+    SearchFailed,
+    SearchNotFound,
+)
 
 
 class InvalidTweet(ValueError):
@@ -74,7 +79,6 @@ class Bot:
         self.old_since_id = 1
         self.since_id_file_path = self.config["last_id_file"]
         self.since_id = self.get_since_id()
-        self.keyword = self.config["trigger_keyword"]
         self.stop_words = self.config["stop_words"]
         self.sleep_time = self.config["sleep_time"]
 
@@ -95,36 +99,6 @@ class Bot:
             self.logger.error(str(e))
             raise e
 
-    def clean_tweet_text(self, tweet_text: str) -> str:
-        tweet_lines = re.split("[\n\r]", tweet_text)
-        for line in tweet_lines:
-            clean_line = " ".join(
-                [
-                    word.lower()
-                    for word in line.split(" ")
-                    if word.lower() not in self.stop_words
-                ]
-            )
-            splitted_line = clean_line.split("@wikitransbot " + self.keyword + " ")
-
-            # Trigger word not found
-            if len(splitted_line) == 1:
-                continue
-            return splitted_line[1]
-        # No correct line found
-        raise InvalidTweet()
-
-    def build_search_article_url(self, *, tweet_text):
-        try:
-            tweet = self.clean_tweet_text(tweet_text)
-        except InvalidTweet:
-            return ""
-
-        base_url = "https://wikitrans.co/wp-admin/admin-ajax.php"
-        parameters = "?action=jet_ajax_search&search_taxonomy%5D=&data%5Bvalue%5D="
-        url = base_url + parameters
-        return f"{url}{urllib.parse.quote(tweet)}"
-
     def tweet(self, *, text, to):
         self.api.create_tweet(
             text=text,
@@ -138,36 +112,34 @@ class Bot:
         self.since_id = max(new_since_id, self.since_id)
 
     def run(self):
+        cmd = Cmd(self.stop_words)
+
         while True:
             try:
                 tweets = self.api.get_mentions(
                     user_id=self.wikitransbot_id, since_id=self.since_id
                 ).data
                 for tweet in tweets:
-                    self.update_since_id(int(tweet.id))
-
-                    request_url = self.build_search_article_url(tweet_text=tweet.text)
-                    if not request_url:
+                    try:
+                        self.update_since_id(int(tweet.id))
+                        msg = cmd.exec(tweet.text)
+                        answer_template = choice(self.config["answer_template"])
+                        self.tweet(
+                            text=answer_template % (msg),
+                            to=tweet.id,
+                        )
+                    except SearchNotFound:
+                        no_answer_template = choice(self.config["no_answer_template"])
+                        self.tweet(text=no_answer_template, to=tweet.id)
+                    except SearchFailed:
+                        # network issues re-try ?
                         continue
-                    self.logger.info(
-                        f'New tweet found with id #{tweet.id} saying "{tweet.text}"'
-                    )
-
-                    response = requests.get(request_url)
-                    if response.status_code == 200:
-                        data = response.json()["data"]
-                        if not data["post_count"]:
-                            no_answer_template = choice(
-                                self.config["no_answer_template"]
-                            )
-                            self.tweet(text=no_answer_template, to=tweet.id)
-                        else:
-                            answer_template = choice(self.config["answer_template"])
-                            self.tweet(
-                                text=answer_template % (data["posts"][0]["link"]),
-                                to=tweet.id,
-                            )
-
+                    except CmdNotFound:
+                        # tweet a default command or a help message
+                        continue
+                    except InvalidCmd:
+                        # tweet the command help
+                        continue
             except Exception as e:
                 self.since_id = self.old_since_id
                 self.logger.warning(str(e))
