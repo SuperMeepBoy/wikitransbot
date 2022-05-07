@@ -11,6 +11,7 @@ pytest = "6.2.5"
 flake8 = "^4.0.1"
 black = "^22.3.0"
 watchdog = "^2.1.7"
+coverage = "^6.3.2"
 
 [tool.poetry.dev-dependencies]
 ipdb = "^0.13.9"
