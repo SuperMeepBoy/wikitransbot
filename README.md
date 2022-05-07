@@ -1,8 +1,8 @@
 ![Twitter URL](https://img.shields.io/twitter/url?color=violet&label=Wikitransbot%20Twitter&style=flat-square&url=https%3A%2F%2Ftwitter.com%2Fwikitransbot) ![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/SuperMeepBoy/wikitransbot?style=flat-square) ![GitHub last commit](https://img.shields.io/github/last-commit/SuperMeepBoy/wikitransbot?color=yellow&style=flat-square) ![GitHub](https://img.shields.io/github/license/SuperMeepBoy/wikitransbot?style=flat-square)
 
-![wikitransbot banner](./assets/wikitransbot_banner_dark.png "Welcome on the official Wikitransbot Github repo")
+# Welcome to the offical Wikitransbot Github repo
 
-# This is the offical Wikitransbot Github repo
+![wikitransbot banner](./assets/wikitransbot_banner_dark.png "Welcome on the official Wikitransbot Github repo")
 
 ## Description
 
