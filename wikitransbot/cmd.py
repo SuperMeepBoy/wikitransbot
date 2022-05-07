@@ -81,3 +81,20 @@ class Article(CmdBase):
 
     def help(self):
         return f"{self.prefix} {self.cmd_name} recherche"
+
+
+class Intro(CmdBase):
+    default_name = "intro"
+
+    def match(self, cmd_name):
+        return cmd_name in [
+            self.default_name,
+            "transidentité",
+            "transidentite",
+        ]
+
+    def do(self, _):
+        return "https://wikitrans.co/intro/"
+
+    def help(self):
+        return f"{self.prefix} {self.default_name}"

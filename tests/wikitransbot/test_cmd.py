@@ -8,6 +8,7 @@ from wikitransbot.cmd import (
     Article,
     Cmd,
     CmdNotFound,
+    Intro,
     InvalidCmd,
     SearchFailed,
     SearchNotFound,
@@ -210,3 +211,46 @@ class TestArticle:
 
     def test_help(self):
         assert Article().help() == "@wikitransbot article recherche"
+
+
+class TestIntro:
+
+    @pytest.mark.parametrize(
+        "search",
+        [
+            "",
+            None,
+            "some other keyword",
+        ]
+    )
+    def test_do(self, search):
+        assert Intro().do(search) == "https://wikitrans.co/intro/"
+
+    @pytest.mark.parametrize(
+        "cmd_name, expected_result",
+        [
+            (
+                "intro", True,
+            ),
+            (
+                "transidentité", True,
+            ),
+            (
+                "transidentite", True,
+            ),
+            (
+                "bad", False,
+            ),
+            (
+                "", False,
+            ),
+            (
+                None, False,
+            ),
+        ],
+    )
+    def test_match(self, cmd_name, expected_result):
+        assert Intro().match(cmd_name) == expected_result
+
+    def test_help(self):
+        assert Intro().help() == "@wikitransbot intro"
