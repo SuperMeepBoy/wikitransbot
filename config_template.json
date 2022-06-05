@@ -55,6 +55,19 @@
 				"La carte des associations est disponible ici : %s"
 			],
 			"link": "https://wikitrans.co/carte/"
+		},
+		"HelpCommandHandler": {
+			"module": "wikitransbot.command_handlers.help_command_handler",
+			"aliases": ["help", "aide"],
+			"short_description": "get the help message",
+			"required_arguments": [],
+			"answer_template":  [
+				"Tu trouveras un résumé des commandes sur le README du projet disponible ici : %s"
+			],
+			"invalid_command_answer_template" : [
+				"Désolé·e, je n'ai pas compris ta demande. Pour voir la liste de commandes disponibles, clique ici : %s"
+			],
+			"link": "https://github.com/SuperMeepBoy/wikitransbot#commands="
 		}
 	},
 	 "sleep_time": 60,
