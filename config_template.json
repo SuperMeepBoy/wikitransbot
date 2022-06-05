@@ -45,6 +45,16 @@
 				"Le trombinoscope est disponible ici : %s"
 			],
 			"link": "https://wikitrans.co/modeles/"
+		},
+		"MapCommandHandler": {
+			"module": "wikitransbot.command_handlers.map_command_handler",
+			"aliases": ["map", "carte", "associations", "association", "assos", "asso"],
+			"short_description": "get the map of Trans associations in France",
+			"required_arguments": [],
+			"answer_template":  [
+				"La carte des associations est disponible ici : %s"
+			],
+			"link": "https://wikitrans.co/carte/"
 		}
 	},
 	 "sleep_time": 60,
