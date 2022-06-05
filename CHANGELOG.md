@@ -1,5 +1,8 @@
-**[1.1.2] - ????-??-??**
+**[1.2.0] - ????-??-??**
 
+**Added**
+
+- Added a new "intro" command to get the basics of transidentity article
 
 **Changed**
 

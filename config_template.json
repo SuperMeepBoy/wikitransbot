@@ -25,6 +25,16 @@
 			"issue_template": [
 				"Désolé·e, il y a eu un problème avec la requête. Veuillez réessayer plus tard. Si le problème persiste, contactez l'administrateur·rice.\n\n Bonne journée !"
 			]
+		},
+		"IntroCommandHandler": {
+			"module": "wikitransbot.command_handlers.intro_command_handler",
+			"aliases": ["intro", "bases"],
+			"short_description": "get the introduction article",
+			"required_arguments": [],
+			"answer_template":  [
+				"Les bases à connaître sur la transidentité, accessibles en 1 clic : %s.\n\nBonne journée !"
+			],
+			"link": "https://wikitrans.co/intro/"
 		}
 	},
 	 "sleep_time": 60,
