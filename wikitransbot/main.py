@@ -9,7 +9,10 @@ from pytwitter import Api
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
-from wikitransbot.exceptions import InvalidCommandException
+from wikitransbot.exceptions import (
+    ArticleCommandEmptyRequestException,
+    InvalidCommandException,
+)
 
 
 class ConfigWatcher:
@@ -149,6 +152,8 @@ class Bot:
 
             except InvalidCommandException:
                 self.logger.exception(f"⛔ Command {command_keyword} not found.")
+            except ArticleCommandEmptyRequestException:
+                self.logger.exception(f"🚫 No request found for tweet {tweet.id}")
             except Exception as e:
                 self.since_id = self.old_since_id
                 self.logger.exception(f"❗{str(e)}")
