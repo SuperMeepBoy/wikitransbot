@@ -1,10 +1,7 @@
+from importlib import import_module
 import json
 import logging
-import urllib.parse
-import re
 from logging.handlers import RotatingFileHandler
-from random import choice
-import requests
 from threading import Thread
 import time
 
@@ -12,10 +9,7 @@ from pytwitter import Api
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
-
-class InvalidTweet(ValueError):
-    def __init__(self):
-        super(InvalidTweet, self).__init__("Invlaid Tweet.")
+from wikitransbot.exceptions import InvalidCommandException
 
 
 class ConfigWatcher:
@@ -50,6 +44,7 @@ class ConfigHandler(FileSystemEventHandler):
 class Bot:
     def __init__(self):
         self.load_config()
+        self.running = True
 
     def load_config(self):
         self.config = json.load(
@@ -74,9 +69,20 @@ class Bot:
         self.old_since_id = 1
         self.since_id_file_path = self.config["last_id_file"]
         self.since_id = self.get_since_id()
-        self.keyword = self.config["trigger_keyword"]
         self.stop_words = self.config["stop_words"]
         self.sleep_time = self.config["sleep_time"]
+        self.command_handlers_config = self.config["command_handlers"]
+
+        self.load_handlers()
+
+    def load_handlers(self):
+        self.handlers = {}
+        for handler_name, handler_config in self.command_handlers_config.items():
+            for alias in handler_config["aliases"]:
+                module_name = handler_config["module"]
+                module = import_module(module_name)
+                handler = getattr(module, handler_name)
+                self.handlers[alias] = handler
 
     def get_twitter_api(self):
         twitter_config = self.config["twitter"]
@@ -92,38 +98,12 @@ class Bot:
             with open(self.since_id_file_path, "r") as f:
                 return int(f.read())
         except FileNotFoundError as e:
-            self.logger.error(str(e))
+            self.logger.exception(f"❗{str(e)}")
             raise e
 
-    def clean_tweet_text(self, tweet_text: str) -> str:
-        tweet_lines = re.split("[\n\r]", tweet_text)
-        for line in tweet_lines:
-            clean_line = " ".join(
-                [
-                    word.lower()
-                    for word in line.split(" ")
-                    if word.lower() not in self.stop_words
-                ]
-            )
-            splitted_line = clean_line.split("@wikitransbot " + self.keyword + " ")
-
-            # Trigger word not found
-            if len(splitted_line) == 1:
-                continue
-            return splitted_line[1]
-        # No correct line found
-        raise InvalidTweet()
-
-    def build_search_article_url(self, *, tweet_text):
-        try:
-            tweet = self.clean_tweet_text(tweet_text)
-        except InvalidTweet:
-            return ""
-
-        base_url = "https://wikitrans.co/wp-admin/admin-ajax.php"
-        parameters = "?action=jet_ajax_search&search_taxonomy%5D=&data%5Bvalue%5D="
-        url = base_url + parameters
-        return f"{url}{urllib.parse.quote(tweet)}"
+    def write_since_id(self, file_path: str, since_id: int) -> None:
+        with open(file_path, "w") as f:
+            f.write(str(since_id))
 
     def tweet(self, *, text, to):
         self.api.create_tweet(
@@ -131,52 +111,49 @@ class Bot:
             reply_in_reply_to_tweet_id=to,
             reply_exclude_reply_user_ids=[],
         )
-        self.logger.info(f"Answer sent to #{to} with message {text}")
+        self.logger.debug(f"Answer sent to #{to} with message {text}")
 
-    def update_since_id(self, new_since_id):
+    def update_since_id(self, new_since_id: int) -> None:
         self.old_since_id = self.since_id
         self.since_id = max(new_since_id, self.since_id)
 
+    def get_command_handler(self, command_alias: str) -> callable:
+        command = self.handlers.get(command_alias)
+        if command:
+            return command
+        else:
+            raise InvalidCommandException
+
     def run(self):
-        while True:
+        self.logger.debug("👍 Started.")
+        while self.running:
             try:
+                self.logger.debug("🔎 Checking for new tweets...")
                 tweets = self.api.get_mentions(
                     user_id=self.wikitransbot_id, since_id=self.since_id
                 ).data
                 for tweet in tweets:
+                    self.logger.debug(f"🐦 Tweet received: {tweet.text}")
                     self.update_since_id(int(tweet.id))
-
-                    request_url = self.build_search_article_url(tweet_text=tweet.text)
-                    if not request_url:
-                        continue
-                    self.logger.info(
-                        f'New tweet found with id #{tweet.id} saying "{tweet.text}"'
+                    message = tweet.text.split("@wikitransbot")[1]
+                    command_keyword = message.split()[0]
+                    request = ' '.join(message.split()[1:])
+                    self.logger.debug(f"❕ Command received: {command_keyword}")
+                    self.logger.debug(f"🗨️ Request received: {request}")
+                    command_handler = (
+                        self.get_command_handler(command_keyword)
+                        (request=request, stop_words=self.stop_words, logger=self.logger)
                     )
+                    answer = command_handler.handle()
+                    self.tweet(text=answer, to=tweet.id)
 
-                    response = requests.get(request_url)
-                    if response.status_code == 200:
-                        data = response.json()["data"]
-                        if not data["post_count"]:
-                            no_answer_template = choice(
-                                self.config["no_answer_template"]
-                            )
-                            self.tweet(text=no_answer_template, to=tweet.id)
-                        else:
-                            answer_template = choice(self.config["answer_template"])
-                            self.tweet(
-                                text=answer_template % (data["posts"][0]["link"]),
-                                to=tweet.id,
-                            )
-
+            except InvalidCommandException:
+                self.logger.exception(f"⛔ Command {command_keyword} not found.")
             except Exception as e:
                 self.since_id = self.old_since_id
-                self.logger.warning(str(e))
+                self.logger.exception(f"❗{str(e)}")
 
-            with open(self.since_id_file_path, "w") as f:
-                f.write(
-                    str(self.since_id)
-                )  # So if the bot crashes we know where to start
-
+            self.write_since_id(self.since_id_file_path, self.since_id)
             time.sleep(self.sleep_time)
 
 
