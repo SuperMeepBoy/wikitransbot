@@ -9,6 +9,23 @@
 	},
 	"last_id_file": "last_id_file_placeholder",
 	"command_handlers": {
+		"ArticleCommandHandler": {
+			"module": "wikitransbot.command_handlers.article_command_handler",
+			"aliases": ["article"],
+			"short_description": "request an article",
+			"required_arguments": ["keywords"],
+			"answer_template":  [
+				"Salut ! Tu pourras trouver toutes les infos en cliquant sur ce lien : %s.\n\nBonne journée !",
+				"Je t'ai trouvé une ressource ici : %s.\n\nBonne journée !"
+			],
+			"no_answer_template": [
+				"Désolé·e, je n'ai pas trouvé de ressource correspondant à ta demande. \n\n Bonne journée !",
+				"Je n'ai trouvé aucune ressource correspondant à ta demande, désolé·e !\n\n Bonne journée !"
+			],
+			"issue_template": [
+				"Désolé·e, il y a eu un problème avec la requête. Veuillez réessayer plus tard. Si le problème persiste, contactez l'administrateur·rice.\n\n Bonne journée !"
+			]
+		}
 	},
 	 "sleep_time": 60,
 	 "logfile_path": "logfile_path_placeholder",
