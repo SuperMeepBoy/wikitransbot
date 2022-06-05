@@ -15,6 +15,12 @@
         src: "{{ wikitransbot_folder }}/Dockerfile"
         dest: "{{ remote_wikitransbot_folder }}"
 
+    - name: Update config
+      copy:
+        src: "{{ wikitransbot_folder }}/config_template.json"
+        dest: /home/ubuntu/{{ bot_name }}/config.json
+      become: true
+
     - name: Rebuild docker image
       docker_image:
         name: "{{ bot_name }}"

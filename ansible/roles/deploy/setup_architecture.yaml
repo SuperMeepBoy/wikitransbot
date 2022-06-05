@@ -6,8 +6,8 @@
 
 - name: Copy {{ bot_name }} code
   copy:
-    src: "{{ wikitransbot_folder }}/wikitransbot/main.py"
-    dest: /home/ubuntu/{{ bot_name }}/{{ bot_name }}
+    src: "{{ wikitransbot_folder }}/wikitransbot"
+    dest: /home/ubuntu/{{ bot_name }}/
 
 - name: Copy {{ bot_name }} requirements.txt
   copy:

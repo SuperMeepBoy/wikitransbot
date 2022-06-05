@@ -8,13 +8,12 @@ RUN mkdir /etc/wikitransbot
 RUN chmod 755 /etc/wikitransbot
 
 COPY wikitransbot /shared/wikitransbot/wikitransbot
-COPY requirements.txt /shared/
-COPY pyproject.toml /shared/
+COPY pyproject.toml /shared/wikitransbot
 COPY config.json /etc/wikitransbot/config.json
 
-WORKDIR /shared
+WORKDIR /shared/wikitransbot
 RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python3
 ENV PATH="/root/.local/bin:$PATH"
 RUN poetry install
 
-CMD ["poetry", "run", "python", "wikitransbot/wikitransbot/main.py"]
+CMD ["poetry", "run", "python", "wikitransbot/main.py"]

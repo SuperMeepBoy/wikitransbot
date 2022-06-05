@@ -3,8 +3,8 @@
   remote_user: ubuntu
   vars:
     bot_name: wikitransbot
-    wikitransbot_folder: /home/ubuntu/wikitransbot
-    config_path: "{{ wikitransbot_folder }}/config.json"
+    remote_wikitransbot_folder: /home/ubuntu/wikitransbot
+    config_path: "{{ remote_wikitransbot_folder }}/config.json"
 
   tasks:
     - name: Set twitter_api_key
@@ -77,7 +77,7 @@
       docker_image:
         name: "{{ bot_name }}"
         build:
-          path: "{{ wikitransbot_folder }}"
+          path: "{{ remote_wikitransbot_folder }}"
         source: build
 
     - name: Run {{ bot_name }} docker container
