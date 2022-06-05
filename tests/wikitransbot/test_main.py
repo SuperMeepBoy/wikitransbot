@@ -1,12 +1,14 @@
 from unittest.mock import (
     MagicMock,
+    PropertyMock,
     patch,
 )
 import tempfile
 
 import pytest
 
-from wikitransbot.main import Bot, InvalidTweet
+from wikitransbot.main import Bot
+from wikitransbot.exceptions import InvalidCommandException
 
 
 class TestBot:
@@ -27,85 +29,71 @@ class TestBot:
                 bot.since_id_file_path = ""
                 bot.get_since_id()
 
-    @pytest.mark.parametrize(
-        "tweet_text, keyword, expected_result",
-        [
-            ("@wikitransbot article féminiser sa voix", "article", "féminiser voix"),
-            (
-                "@ally @wikitransbot article psy transfriendly",
-                "article",
-                "psy transfriendly",
-            ),
-            (
-                "@wikitransbot article féminiser voix & visage",
-                "article",
-                "féminiser voix & visage",
-            ),
-            (
-                "Hey, check it out!\n@wikitransbot article féminiser sa voix\nAwesome article!",
-                "article",
-                "féminiser voix",
-            ),
-        ],
-    )
-    def test_clean_tweet_text(self, tweet_text, keyword, expected_result):
-        with patch.object(Bot, "__init__", lambda x: None):
-            bot = Bot()
-            bot.keyword = keyword
-            bot.stop_words = ["unused_word", "sa"]
-            result = bot.clean_tweet_text(tweet_text=tweet_text)
-            assert result == expected_result
+    @patch.object(Bot, "__init__", lambda x: None)
+    @patch.object(Bot, "write_since_id", MagicMock())
+    @patch.object(Bot, "tweet", MagicMock())
+    @patch.object(Bot, "update_since_id", MagicMock())
+    @patch.object(Bot, "get_command_handler")
+    def test_run_command_ok(self, m_get_command_handler):
+        # Given
+        tweet_text = "Hey\n\n @wikitransbot command arg1 arg2\n\nThanks a lot"
+        Bot.running = PropertyMock(side_effect=[True, False])
+        bot = Bot()
+        bot.since_id = 1000
+        bot.wikitransbot_id = "1111"
+        bot.since_id_file_path = "path"
+        bot.sleep_time = 60
+        bot.stop_words = ["arg1", "arg3"]
+        bot.logger = MagicMock()
+        bot.api = MagicMock(
+            get_mentions=MagicMock(
+                return_value=MagicMock(
+                    data=[
+                        MagicMock(id=1000, text=tweet_text)
+                    ]
+                )
+            )
+        )
+        command_handler = MagicMock(return_value=MagicMock(handle=MagicMock(return_value="answer")))
+        m_get_command_handler.return_value = command_handler
+
+        # When
+        with patch("wikitransbot.main.time.sleep") as m_sleep:
+            bot.run()
+
+        # Then
+        bot.update_since_id.assert_called_once_with(1000)
+        m_get_command_handler.assert_called_once_with("command")
+        command_handler.assert_called_once_with(
+            request="arg1 arg2 Thanks a lot",
+            stop_words=bot.stop_words,
+            logger=bot.logger
+        )
+        bot.tweet.assert_called_once_with(text="answer", to=1000)
+        bot.write_since_id.assert_called_once_with('path',  1000)
+        m_sleep.assert_called_once_with(bot.sleep_time)
 
     @pytest.mark.parametrize(
-        "tweet_text, keyword, expected_result",
+        "tweet_command, expected_command",
         [
-            (
-                "@wikitransbot tu as perdu",
-                "article",
-                "",
-            ),
-            (
-                "@wikitransbot je t'invoque article féminiser sa voix",
-                "article",
-                "",
-            ),
-        ],
+            ("map", "map"),
+            ("carte", "map"),
+            ("help", "help"),
+        ]
     )
-    def test_clean_tweet_text_raise_invalid_tweet(
-        self, tweet_text, keyword, expected_result
-    ):
+    def test_get_command_handler(self, tweet_command, expected_command):
         with patch.object(Bot, "__init__", lambda x: None):
             bot = Bot()
-            bot.keyword = keyword
-            bot.stop_words = []
-            with pytest.raises(InvalidTweet):
-                bot.clean_tweet_text(tweet_text=tweet_text)
+            bot.handlers = {
+                "map": "map",
+                "carte": "map",
+                "help": "help",
+            }
+            assert bot.get_command_handler(tweet_command) == expected_command
 
-    @pytest.mark.parametrize(
-        "m_clean_tweet_text_return_value, expected_result",
-        [
-            (
-                "féminiser voix",
-                "https://wikitrans.co/wp-admin/admin-ajax.php"
-                "?action=jet_ajax_search&search_taxonomy%5D=&data%5Bvalue%5D=f%C3%A9miniser%20voix",
-            ),
-            (
-                "féminiser voix & visage",
-                "https://wikitrans.co/wp-admin/admin-ajax.php"
-                "?action=jet_ajax_search&search_taxonomy%5D=&data%5Bvalue%5D=f%C3%A9miniser%20voix%20%26%20visage",
-            ),
-            (
-                InvalidTweet(),
-                "",
-            ),
-        ],
-    )
-    @patch.object(Bot, "clean_tweet_text")
-    def test_build_search_article_url(
-        self, m_clean_tweet_text, m_clean_tweet_text_return_value, expected_result
-    ):
-        m_clean_tweet_text.side_effect = [m_clean_tweet_text_return_value]
+    def test_get_command_handler_invalid_command(self):
         with patch.object(Bot, "__init__", lambda x: None):
             bot = Bot()
-            result = bot.build_search_article_url(tweet_text="w/e")
-            assert result == expected_result
+            bot.handlers = {}
+            with pytest.raises(InvalidCommandException):
+                bot.get_command_handler("invalid")
