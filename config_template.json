@@ -35,6 +35,16 @@
 				"Les bases à connaître sur la transidentité, accessibles en 1 clic : %s.\n\nBonne journée !"
 			],
 			"link": "https://wikitrans.co/intro/"
+		},
+		"TrombinoscopeCommandHandler": {
+			"module": "wikitransbot.command_handlers.trombinoscope_command_handler",
+			"aliases": ["trombinoscope", "trombi", "galerie"],
+			"short_description": "get the trombinoscope",
+			"required_arguments": [],
+			"answer_template":  [
+				"Le trombinoscope est disponible ici : %s"
+			],
+			"link": "https://wikitrans.co/modeles/"
 		}
 	},
 	 "sleep_time": 60,

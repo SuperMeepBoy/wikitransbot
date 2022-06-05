@@ -3,6 +3,7 @@
 **Added**
 
 - Added a new "intro" command to get the basics of transidentity article
+- Added a new "trombinoscope" command to get the photos page
 
 **Changed**
 
