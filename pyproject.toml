@@ -5,13 +5,16 @@ description = "A Twitter bot to make request on the Wikitrans.co website"
 authors = ["Jef Roelandt <roelandt.jef@proton.me>"]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "3.8.15"
 python-twitter-v2 = "0.7.4"
 pytest = "6.2.5"
 flake8 = "^4.0.1"
 black = "^22.3.0"
 watchdog = "^2.1.7"
 coverage = "^6.3.2"
+setuptools-rust = "^1.5.2"
+setuptools = "^65.5.1"
+snips-nlu = "^0.20.2"
 
 [tool.poetry.dev-dependencies]
 ipdb = "^0.13.9"

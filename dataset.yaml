@@ -1,0 +1,243 @@
+# ----------------------------------
+# ---------- Introduction ----------
+# ----------------------------------
+
+# getBases intent
+---
+type: intent
+name: getBases
+utterances:
+  - Comment transitionner ?
+  - Je voudrais connaître les bases de la transidentité.
+  - C'est quoi une personne trans ?
+  - C'est quoi la transidentité ?
+  - Je ne connais rien à la transidentité
+  - Je souhaite comprendre la transidentité
+  - Je ne comprends pas la transidentité
+
+# getEtreTrans intent
+---
+type: intent
+name: getEtreTrans
+utterances:
+  - C'est quoi une personne trans ?
+  - C'est quoi la transidentité ?
+  - Ca veut dire quoi être trans ?
+  - Qu'est-ce qu'être transgenre ?
+  - Que signifie être trans ?
+
+# getEtreNonBinaire intent
+---
+type: intent
+name: getEtreNonBinaire
+utterances:
+  - C'est quoi une personne non-binaire ?
+  - C'est quoi être non-binaire ?
+  - Ca veut dire quoi être non-binaire ?
+  - C'est quoi la non-binarité ?
+  - Je voudrais en savoir plus sur la non-binarité
+
+# getIntersexuation intent
+---
+type: intent
+name: getIntersexuation
+utterances:
+  - C'est quoi une personne intersexe ?
+  - Je voudrais en savoir plus sur l'intersexuation.
+  - Ca veut dire quoi intersexe ?
+  - Qu'est-ce que ça veut dire une personne intersexuée ?
+
+# getLexique intent
+---
+type: intent
+name: getLexique
+utterances:
+  - Il y a beaucoup de termes que je ne comprends pas
+  - Ca veut dire quoi LGBTQIA+ ?
+  - Ca signifie quoi LGBT ?
+  - Je comprends pas toutes les lettres du sigle
+  - Comprendre les mots liés à la transidentité
+
+# ----------------------------------
+# ---- Espace alliés et proches ----
+# ----------------------------------
+
+# getCommentAider
+---
+type: intent
+name: getCommentAider
+utterances:
+  - Comment puis-je aider les personnes trans ?
+  - Que puis-je faire pour aider la communauté LGBT ?
+  - Je veux aider les personnes trans !
+  - Que faire pour améliorer la vie des personnes trans ?
+
+# getOuterMonProche
+---
+type: intent
+name: getOuterMonProche
+utterances:
+  - Pourquoi n'ai-je pas le droit de dévoiler la transidentité de mon ami ?
+  - Puis-je parler de la transidentité de mes proches ?
+  - Est-il possible d'outer son proche ?
+  - Est-il dangereux de révéler la transidentité de quelqu'un ?
+
+# getBrochureDRHManager
+---
+type: intent
+name: getBrochureDRHManager
+utterances:
+  - Je suis DRH d'une entreprise, que puis-je faire pour inclure au mieux mes salariés transgenres ?
+  - Je suis manager dans ma boîte et je voudrais adopter les bonnes pratiques pour être inclusif avec les personnes trans
+  - Quelles sont les mesures à prendre en entreprise pour se montrer respectueux et intégrer les personnes trans ?
+  - Y a-t-il une liste de bonnes pratiques pour les entreprises en ce qui concerne les transidentités ?
+  - Mon entrerpise est à la traine sur les question de transidentités.
+  - Que dit la loi pour la transidentité dans les entreprises ?
+
+# getPasSurEPronom
+---
+type: intent
+name: getPasSurEPronom
+utterances:
+  - Quels pronoms utiliser pour une personne quand je ne suis pas sûr ?
+  - Je ne connais pas le pronom de mon interlocuteur, que faire ?
+  - Mon interlocutrice ne m'a pas dit ses pronoms et je doute, je ne voudrais pas la blesser.
+
+# getDifferenceTransgenreTransexuel
+---
+type: intent
+name: getDifferenceTransgenreTransexuel
+utterances:
+  - On ne devrait pas dire transexuel ?
+  - C'est quoi la différence entre transgenre et transexuel ?
+  - Pourquoi dire transgenre et pas transexuel ?
+  - On ne dit plus transexuel pour une personne qui change de genre ?
+
+# getTransidentiteMode
+---
+type: intent
+name: getTransidentiteMode
+utterances:
+  - La transidentité c'est une mode.
+  - Le lobby LGBTQIA+ a créé une mode de changer de sexe
+  - La transidentité est-elle une mode ?
+  - Est-ce qu'être trans ce n'est pas un peu une mode ?
+  - Il ne faudrait pas que la transidentité devienne une mode.
+
+# getComportement
+---
+type: intent
+name: getComportement
+utterances:
+  - Comment me comporter face à une personne trans ?
+  - Quel est le bon comportement à adopter avec une personne transgenre ?
+  - Comment éviter de blesser une personne transgenre ?
+  - Quelles sont les choses à savoir pour ne pas mettre mal à l'aise une personne trans ?
+
+# getSexualite
+---
+type: intent
+name: getSexualite
+utterances:
+  - Et en terme de sexualité ça se passe comment pour les personnes trans ?
+  - Quel rapport les personnes trans ont au sexe ?
+  - Les personnes trans sont comme dans les porno ?
+  - Ca se passe comment au lit quand on est avec une personne trans ?
+
+# getSport
+---
+type: intent
+name: getSport
+utterances:
+  - Les personnes trans ont-elles des résultats sportifs différents des athlètes cis du même sexe qu'elles ?
+  - Il y a un désavantage sportif dans le milieu du sport à cause des personnes trans
+  - Les femmes trans volent les victoires des femmes dans le milieu sportif
+  - Y a-t-il un avantage sportif après une transition ?
+  - Y a-t-il un lien entre de meilleurs résultats sportifs et la transidentité ?
+  - Le sport est-il impacté par la transidentité ? 
+
+
+
+# ----------------------------------
+# ----------- Brochures ------------
+# ----------------------------------
+
+# ----------------------------------
+# ---------- Communautés -----------
+# ----------------------------------
+
+# ----------------------------------
+# -------- En questionnement -------
+# ----------------------------------
+
+# ----------------------------------
+# ----------- Coming-out -----------
+# ----------------------------------
+
+# ----------------------------------
+# ------ Traitement hormonaux ------
+# ----------------------------------
+
+# ----------------------------------
+# - Financements et remboursements -
+# ----------------------------------
+
+# ----------------------------------
+# ------------ Médical -------------
+# ----------------------------------
+
+# ----------------------------------
+# ---------- Administratif ---------
+# ----------------------------------
+
+# getDroitsEtudiantEs intent
+---
+type: intent
+name: getDroitsEtudiantEs
+utterances:
+  - Quels sont mes droits en tant qu'étudiant·e·s transgenre ?
+  - Y a-t-il des droits pour les personnes trans dans leurs études ?
+  - Quels sont mes droits à l'université ?
+  - Je veux connaître les droits des personnes trans au collège
+  - Une personne trans élève de lycée a-t-elle des droits ?
+  - A l'école, ai-je des droits en tant que personne trans ? 
+
+
+# ----------------------------------
+# ------ Transition féminine -------
+# ----------------------------------
+
+# getPassingFeminin intent
+---
+type: intent
+name: getPassingFeminin
+utterances:
+  - Comment ressembler à une femme ?
+  - J'aimerais être perçue en tant que femme.
+  - On continue de me prendre pour un homme, que faire ?
+  - Les gens m'appellent monsieur alors que je voudrais qu'on m'appelle madame.
+  - Tout le monde croit que je suis un homme.
+  - Comment avoir l'air plus féminine ?
+
+# getFeminiserVoix intent
+---
+type: intent
+name: getFeminiserVoix
+utterances:
+  - Comment féminiser sa voix ?
+  - Comment avoir une voix moins masculine ?
+  - Comment avoir une voix plus féminine ?
+  - Comment avoir une voix moins grave ?
+  - Comment avoir une voix plus aigue ?
+  - J'en ai marre de ma voix d'homme
+  - J'en ai marre de ma voix grave.
+  - J'aimerais avoir une voix de femme.
+  - Ma voix est trop grave que puis-je faire ?
+
+# ----------------------------------
+# ------ Transition masculine ------
+# ----------------------------------
+
+# ----------------------------------
+# ---------- Non-binarité ----------
+# ----------------------------------

@@ -1,11 +1,14 @@
 from importlib import import_module
+import io
 import json
 import logging
 from logging.handlers import RotatingFileHandler
+from random import choice
 from threading import Thread
 import time
 
 from pytwitter import Api
+from snips_nlu import SnipsNLUEngine
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
@@ -47,6 +50,8 @@ class ConfigHandler(FileSystemEventHandler):
 class Bot:
     def __init__(self):
         self.load_config()
+        self.load_engine()  # TODO: Move that somewhere else maybe ?
+        self.load_intent_link_matches()
         self.running = True
 
     def load_config(self):
@@ -72,20 +77,17 @@ class Bot:
         self.old_since_id = 1
         self.since_id_file_path = self.config["last_id_file"]
         self.since_id = self.get_since_id()
-        self.stop_words = self.config["stop_words"]
         self.sleep_time = self.config["sleep_time"]
-        self.command_handlers_config = self.config["command_handlers"]
 
-        self.load_handlers()
-
-    def load_handlers(self):
-        self.handlers = {}
-        for handler_name, handler_config in self.command_handlers_config.items():
-            for alias in handler_config["aliases"]:
-                module_name = handler_config["module"]
-                module = import_module(module_name)
-                handler = getattr(module, handler_name)
-                self.handlers[alias] = handler
+    def load_engine(self):
+        self.engine = SnipsNLUEngine()
+        with io.open("dataset.json") as f:
+            dataset = json.load(f)
+        self.engine.fit(dataset)
+    
+    def load_intent_link_matches(self):
+        with io.open("wikitransbot/intent_link_matches.json") as f:
+            self.intent_link_matches = json.load(f)
 
     def get_twitter_api(self):
         twitter_config = self.config["twitter"]
@@ -120,40 +122,28 @@ class Bot:
         self.old_since_id = self.since_id
         self.since_id = max(new_since_id, self.since_id)
 
-    def get_command_handler(self, command_alias: str) -> callable:
-        command = self.handlers.get(command_alias)
-        if command:
-            return command
-        else:
-            raise InvalidCommandException
-
     def run(self):
         self.logger.debug("👍 Started.")
         while self.running:
             try:
                 self.logger.debug("🔎 Checking for new tweets...")
                 tweets = self.api.get_mentions(
-                    user_id=self.wikitransbot_id, since_id=self.since_id
+                    user_id=self.api.get_me().data.id, since_id=self.since_id
                 ).data
                 for tweet in tweets:
                     self.logger.debug(f"🐦 Tweet received: {tweet.text}")
                     self.update_since_id(int(tweet.id))
-                    message = tweet.text.split("@wikitransbot")[1]
-                    command_keyword = message.split()[0]
-                    request = ' '.join(message.split()[1:])
-                    self.logger.debug(f"❕ Command received: {command_keyword}")
-                    self.logger.debug(f"🗨️ Request received: {request}")
-                    command_handler = (
-                        self.get_command_handler(command_keyword)
-                        (request=request, stop_words=self.stop_words, logger=self.logger)
-                    )
-                    answer = command_handler.handle()
+                    request = tweet.text.split(f"@{self.api.get_me().data.username}")[1]
+                    engine_understanding = self.engine.parse(request)
+                    intent = engine_understanding['intent']['intentName']
+                    probability = engine_understanding['intent']['probability']
+                    if intent is None or probability < 0.7:
+                        answer = choice(self.config["no_answer_templates"]) 
+                    else:
+                        link = self.intent_link_matches[engine_understanding['intent']['intentName']]
+                        answer = choice(self.config["answer_templates"]) % link
                     self.tweet(text=answer, to=tweet.id)
 
-            except InvalidCommandException:
-                self.logger.exception(f"⛔ Command {command_keyword} not found.")
-            except ArticleCommandEmptyRequestException:
-                self.logger.exception(f"🚫 No request found for tweet {tweet.id}")
             except Exception as e:
                 self.since_id = self.old_since_id
                 self.logger.exception(f"❗{str(e)}")
