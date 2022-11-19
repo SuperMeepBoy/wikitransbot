@@ -1,9 +1,9 @@
 - name: Install & configure Wikitransbot
-  hosts: aws
-  remote_user: ubuntu
+  hosts: onpre
+  remote_user: supermeepboy
   vars:
     bot_name: wikitransbot
-    remote_wikitransbot_folder: /home/ubuntu/wikitransbot
+    remote_wikitransbot_folder: /home/supermeepboy/wikitransbot
     config_path: "{{ remote_wikitransbot_folder }}/config.json"
 
   tasks:

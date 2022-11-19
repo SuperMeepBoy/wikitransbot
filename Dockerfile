@@ -10,6 +10,8 @@ RUN chmod 755 /etc/wikitransbot
 COPY wikitransbot /shared/wikitransbot/wikitransbot
 COPY pyproject.toml /shared/wikitransbot
 COPY config.json /etc/wikitransbot/config.json
+RUN mkdir /shared/data
+COPY since_id.txt /shared/data/since_id.txt
 
 WORKDIR /shared/wikitransbot
 RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python3
